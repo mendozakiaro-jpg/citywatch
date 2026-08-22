@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>My Reports - CityWatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: {
+"colors": {
+"primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+"on-primary-container": "#86a0cd", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+"surface": "#f7fafc", "on-surface": "#181c1e", "on-surface-variant": "#43474e",
+"surface-container": "#ebeef0", "surface-container-low": "#f1f4f6", "surface-container-lowest": "#ffffff",
+"outline": "#74777f", "outline-variant": "#c4c6cf", "error": "#ba1a1a", "background": "#f7fafc",
+"tertiary-fixed": "#ffdeaa", "on-tertiary-fixed-variant": "#5f4100"
+},
+"borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}
+}}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<div class="flex min-h-screen w-full">
+
+<aside class="w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col sticky top-0 h-screen z-50 flex-shrink-0">
+<div class="p-6 border-b border-outline-variant">
+<a class="text-xl font-bold text-primary" href="{% url 'resident_dashboard' %}">CityWatch</a>
+</div>
+<nav class="flex-grow p-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'resident_dashboard' %}">
+<span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'report_create' %}">
+<span class="material-symbols-outlined">add_circle</span> Submit Report</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-semibold text-sm" href="{% url 'report_list' %}">
+<span class="material-symbols-outlined">folder_open</span> My Reports</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'public_board' %}">
+<span class="material-symbols-outlined">public</span> Public Board</a>
+</nav>
+<div class="p-4 border-t border-outline-variant flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-error hover:bg-error-container transition-colors text-sm font-semibold" href="{% url 'logout' %}">
+<span class="material-symbols-outlined">logout</span> Logout</a>
+</div>
+</aside>
+
+<main class="flex-1 flex flex-col bg-background min-h-screen">
+<header class="h-16 border-b border-outline-variant bg-surface flex items-center justify-end px-8 sticky top-0 z-40 w-full">
+<span class="text-sm font-semibold text-on-surface">{{ request.user.username }}</span>
+</header>
+
+<div class="flex-1 px-8 py-8 max-w-7xl mx-auto w-full">
+<div class="mb-8">
+<h1 class="text-3xl font-semibold text-primary mb-1">My Reports</h1>
+<p class="text-on-surface-variant">Track the status of your submitted civic issues.</p>
+</div>
+
+<div class="flex overflow-x-auto pb-4 mb-6 gap-2">
+<a href="{% url 'report_list' %}" class="px-6 py-2 rounded-full {% if not status_filter %}bg-primary text-on-primary{% else %}bg-surface-container-lowest border border-outline-variant text-on-surface-variant{% endif %} text-sm font-semibold whitespace-nowrap">All Reports</a>
+<a href="?status=pending" class="px-6 py-2 rounded-full {% if status_filter == 'pending' %}bg-primary text-on-primary{% else %}bg-surface-container-lowest border border-outline-variant text-on-surface-variant{% endif %} text-sm font-semibold whitespace-nowrap">Pending</a>
+<a href="?status=in_progress" class="px-6 py-2 rounded-full {% if status_filter == 'in_progress' %}bg-primary text-on-primary{% else %}bg-surface-container-lowest border border-outline-variant text-on-surface-variant{% endif %} text-sm font-semibold whitespace-nowrap">In Progress</a>
+<a href="?status=resolved" class="px-6 py-2 rounded-full {% if status_filter == 'resolved' %}bg-primary text-on-primary{% else %}bg-surface-container-lowest border border-outline-variant text-on-surface-variant{% endif %} text-sm font-semibold whitespace-nowrap">Resolved</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+{% for report in reports %}
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-300">
+{% if report.photo %}
+<img alt="{{ report.title }}" class="w-full h-40 object-cover" src="{{ report.photo.url }}">
+{% else %}
+<div class="w-full h-40 bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-outline">image</span>
+</div>
+{% endif %}
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary-container text-on-primary-container text-xs mb-2">{{ report.get_category_display }}</span>
+<h3 class="text-lg font-semibold text-primary leading-tight">{{ report.title }}</h3>
+</div>
+{% if report.status == 'pending' %}
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-xs whitespace-nowrap">Pending</span>
+{% elif report.status == 'in_progress' %}
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary text-on-primary text-xs whitespace-nowrap">In Progress</span>
+{% elif report.status == 'resolved' %}
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary text-white text-xs whitespace-nowrap">Resolved</span>
+{% else %}
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-gray-200 text-gray-800 text-xs whitespace-nowrap">{{ report.get_status_display }}</span>
+{% endif %}
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2 flex-1">{{ report.description }}</p>
+<div class="flex justify-between items-end border-t border-surface-container pt-4 mt-auto">
+<div>
+<p class="text-xs text-outline">Report ID</p>
+<p class="text-sm text-on-surface font-medium">#CW-{{ report.id }}</p>
+</div>
+<a href="{% url 'report_detail' report.id %}" class="text-primary text-sm font-semibold hover:underline">View</a>
+</div>
+</div>
+</article>
+{% empty %}
+<div class="col-span-full text-center py-16 text-on-surface-variant">
+No reports found. <a href="{% url 'report_create' %}" class="text-primary font-semibold hover:underline">Submit one now</a>
+</div>
+{% endfor %}
+</div>
+
+</div>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CityWatch Admin Dashboard - Baliwag City</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    "colors": {
+      "secondary": "#0a6c44", "on-surface-variant": "#43474e", "secondary-container": "#9ff5c1",
+      "on-background": "#181c1e", "error": "#ba1a1a", "on-surface": "#181c1e", "primary": "#002045",
+      "primary-fixed-dim": "#adc7f7", "surface-container-low": "#f1f4f6", "outline-variant": "#c4c6cf",
+      "background": "#f7fafc", "outline": "#74777f", "surface-container": "#ebeef0",
+      "on-secondary": "#ffffff", "surface": "#f7fafc", "on-primary": "#ffffff",
+      "surface-container-lowest": "#ffffff", "on-secondary-container": "#167249"
+    },
+    "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }
+  }}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md flex min-h-screen">
+
+<aside class="hidden md:flex flex-col h-screen sticky top-0 left-0 p-4 bg-surface-container-low w-64 border-r border-outline-variant">
+<div class="mb-8">
+  <div class="flex items-center gap-3">
+    <span class="material-symbols-outlined text-primary text-[40px]">location_city</span>
+    <div class="flex flex-col">
+      <h1 class="text-xl font-bold text-primary">Admin Portal</h1>
+      <p class="text-xs text-on-surface-variant">Baliwag City</p>
+    </div>
+  </div>
+</div>
+<nav class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 p-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold text-sm" href="{% url 'analytics_dashboard' %}">
+<span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg text-sm font-semibold" href="{% url 'admin_report_list' %}">
+<span class="material-symbols-outlined">description</span> Reports</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg text-sm font-semibold" href="{% url 'reports_analytics' %}">
+<span class="material-symbols-outlined">analytics</span> Analytics</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg text-sm font-semibold" href="{% url 'map_view' %}">
+<span class="material-symbols-outlined">map</span> Map View</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg text-sm font-semibold" href="{% url 'user_list' %}">
+<span class="material-symbols-outlined">group</span> Users</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg text-sm font-semibold" href="{% url 'department_list' %}">
+<span class="material-symbols-outlined">settings</span> Settings</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a href="{% url 'logout' %}" class="w-full block text-center bg-primary text-on-primary py-2 px-4 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity">Log Out</a>
+</div>
+</aside>
+
+<main class="flex-1 flex flex-col">
+<header class="flex justify-between items-center w-full px-6 md:px-16 h-16 sticky top-0 z-50 bg-surface border-b border-outline-variant">
+<div class="md:hidden"><h1 class="text-xl font-bold text-primary">CityWatch</h1></div>
+<div class="flex items-center gap-4 ml-auto">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+<span class="text-sm font-semibold hidden md:block text-on-surface">{{ request.user.username }}</span>
+</div>
+</div>
+</header>
+
+<div class="p-6 md:p-16 flex-1 max-w-7xl mx-auto w-full">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<div>
+<h2 class="text-3xl font-semibold text-primary">Overview</h2>
+<p class="text-base text-on-surface-variant">Real-time status of community reports in Baliwag City.</p>
+</div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Total Reports</span>
+<span class="material-symbols-outlined text-primary bg-primary-fixed-dim/20 p-2 rounded-full">monitoring</span>
+</div>
+<div class="mt-4"><span class="text-4xl font-bold text-on-surface">{{ total_reports }}</span></div>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Pending</span>
+<span class="material-symbols-outlined text-[#d97706] bg-[#fef3c7] p-2 rounded-full">pending_actions</span>
+</div>
+<div class="mt-4"><span class="text-4xl font-bold text-on-surface">{{ pending_count }}</span>
+<p class="text-xs text-on-surface-variant mt-1">Requires triage</p></div>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">In Progress</span>
+<span class="material-symbols-outlined text-primary bg-primary-fixed-dim/20 p-2 rounded-full">engineering</span>
+</div>
+<div class="mt-4"><span class="text-4xl font-bold text-on-surface">{{ in_progress_count }}</span>
+<p class="text-xs text-on-surface-variant mt-1">Active interventions</p></div>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Resolved</span>
+<span class="material-symbols-outlined text-secondary bg-secondary-container p-2 rounded-full">check_circle</span>
+</div>
+<div class="mt-4"><span class="text-4xl font-bold text-on-surface">{{ resolved_count }}</span>
+{% if avg_resolution_days %}<p class="text-xs text-secondary mt-1">Avg resolution: {{ avg_resolution_days }} days</p>{% endif %}</div>
+</div>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="text-xl font-semibold text-primary">Recent Reports</h3>
+<a href="{% url 'admin_report_list' %}" class="text-primary text-sm font-semibold hover:underline">View All</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant">
+<th class="p-4 text-xs text-on-surface-variant font-medium">ID</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium">Category</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium">Barangay</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium">Date</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium">Status</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody>
+{% for report in recent_reports %}
+<tr class="border-b border-outline-variant hover:bg-surface-container transition-colors group">
+<td class="p-4 text-sm text-on-surface font-medium">#CW-{{ report.id }}</td>
+<td class="p-4 text-sm">{{ report.get_category_display }}</td>
+<td class="p-4 text-sm text-on-surface-variant">{{ report.barangay }}</td>
+<td class="p-4 text-sm text-on-surface-variant">{{ report.date_submitted|date:"M d, Y" }}</td>
+<td class="p-4">
+{% if report.status == 'pending' %}<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#fef3c7] text-[#92400e]">Pending</span>
+{% elif report.status == 'acknowledged' %}<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800">Acknowledged</span>
+{% elif report.status == 'in_progress' %}<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-primary text-white">In Progress</span>
+{% elif report.status == 'resolved' %}<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-secondary text-white">Resolved</span>
+{% else %}<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-gray-200 text-gray-800">Closed</span>{% endif %}
+</td>
+<td class="p-4 text-right"><a href="{% url 'admin_report_detail' report.id %}" class="text-primary text-sm font-semibold hover:underline">View Details</a></td>
+</tr>
+{% empty %}
+<tr><td colspan="6" class="p-6 text-center text-on-surface-variant">No reports submitted yet.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</main>
+</body>
+</html>

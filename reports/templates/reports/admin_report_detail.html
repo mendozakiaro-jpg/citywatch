@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Report Management - CityWatch Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    "colors": {
+      "primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+      "on-primary-container": "#86a0cd", "primary-fixed": "#d6e3ff", "on-primary-fixed": "#001b3c",
+      "primary-fixed-dim": "#adc7f7", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+      "on-secondary": "#ffffff", "on-secondary-container": "#167249", "surface": "#f7fafc",
+      "surface-bright": "#f7fafc", "on-surface": "#181c1e", "on-surface-variant": "#43474e",
+      "surface-container": "#ebeef0", "surface-container-low": "#f1f4f6", "surface-container-lowest": "#ffffff",
+      "outline": "#74777f", "outline-variant": "#c4c6cf", "error": "#ba1a1a"
+    },
+    "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }
+  }}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-surface text-on-surface font-sans overflow-hidden">
+
+<nav class="h-full w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col p-4 overflow-y-auto z-50">
+<div class="mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[40px]">location_city</span>
+<div class="flex flex-col">
+<h2 class="text-xl font-bold text-primary">Admin Portal</h2>
+<p class="text-on-surface-variant text-sm">Baliwag City</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'analytics_dashboard' %}">
+<span class="material-symbols-outlined">dashboard</span> Dashboard</a></li>
+<li><a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container text-on-secondary-container font-bold text-sm" href="{% url 'admin_report_list' %}">
+<span class="material-symbols-outlined">description</span> Reports</a></li>
+<li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'reports_analytics' %}">
+<span class="material-symbols-outlined">analytics</span> Analytics</a></li>
+<li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'map_view' %}">
+<span class="material-symbols-outlined">map</span> Map View</a></li>
+<li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'user_list' %}">
+<span class="material-symbols-outlined">group</span> Users</a></li>
+<li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'department_list' %}">
+<span class="material-symbols-outlined">settings</span> Settings</a></li>
+</ul>
+<a href="{% url 'logout' %}" class="mt-auto flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-primary text-on-primary hover:opacity-90 transition-opacity text-sm font-bold">
+<span class="material-symbols-outlined">logout</span> Log Out</a>
+</nav>
+
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-surface border-b border-outline-variant flex justify-between items-center h-16 px-6">
+<div class="flex items-center gap-4">
+<a href="{% url 'admin_report_list' %}" class="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">arrow_back</span></a>
+<h2 class="text-xl font-semibold text-on-surface">Report Management</h2>
+</div>
+</header>
+
+<main class="ml-64 mt-16 p-6 h-[calc(100vh-4rem)] overflow-y-auto bg-surface-bright flex flex-col xl:flex-row gap-6 max-w-7xl mx-auto">
+
+{% if messages %}
+<div class="xl:col-span-2 w-full">
+{% for message in messages %}
+<div class="mb-4 p-3 rounded bg-secondary-container text-on-secondary-container text-sm">{{ message }}</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<div class="flex-1 flex flex-col gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+<div class="flex justify-between items-start mb-4 flex-wrap gap-3">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider">Report #CW-{{ report.id }}</span>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container text-xs font-semibold">{{ report.get_urgency_display }} Priority</span>
+</div>
+<h2 class="text-3xl font-semibold text-on-surface">{{ report.title }}</h2>
+</div>
+{% if report.status == 'pending' %}
+<span class="px-3 py-1 rounded-full bg-[#fef3c7] text-[#92400e] font-semibold border border-[#fde68a] flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#d97706]"></span> Pending</span>
+{% elif report.status == 'in_progress' %}
+<span class="px-3 py-1 rounded-full bg-primary text-on-primary font-semibold flex items-center gap-1.5">In Progress</span>
+{% elif report.status == 'resolved' %}
+<span class="px-3 py-1 rounded-full bg-secondary text-on-secondary font-semibold flex items-center gap-1.5">Resolved</span>
+{% else %}
+<span class="px-3 py-1 rounded-full bg-gray-200 text-gray-800 font-semibold flex items-center gap-1.5">{{ report.get_status_display }}</span>
+{% endif %}
+</div>
+<div class="flex flex-wrap gap-6 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+<span>{{ report.date_submitted|date:"M d, Y • h:i A" }}</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">location_on</span>
+<span>{{ report.barangay }}</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">person</span>
+<span>Reported by: {{ report.resident.username }}</span>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant md:col-span-2">
+<h3 class="text-xl font-semibold mb-4 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">description</span> Description</h3>
+<p class="text-lg text-on-surface-variant leading-relaxed">{{ report.description }}</p>
+</div>
+
+{% if report.photo %}
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+<h3 class="text-xl font-semibold mb-4 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">photo_library</span> Evidence</h3>
+<img src="{{ report.photo.url }}" class="w-full h-48 object-cover rounded-lg border border-outline-variant">
+</div>
+{% endif %}
+
+{% if report.latitude and report.longitude %}
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+<h3 class="text-xl font-semibold mb-4 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">map</span> Location</h3>
+<p class="text-sm text-on-surface-variant">Lat: {{ report.latitude }}, Lng: {{ report.longitude }}</p>
+</div>
+{% endif %}
+</div>
+</div>
+
+<aside class="w-full xl:w-96 flex flex-col gap-4 shrink-0">
+
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+<h3 class="text-xs text-on-surface-variant uppercase tracking-wider mb-4 font-semibold">Status Management</h3>
+<div class="flex flex-col gap-3">
+<form method="POST" action="{% url 'update_status' report.id %}">
+{% csrf_token %}
+<input type="hidden" name="status" value="pending">
+<button type="submit" class="w-full py-3 px-4 border border-outline-variant rounded-lg text-sm flex justify-between items-center hover:bg-surface-container transition-colors text-on-surface">
+Mark as Pending <span class="material-symbols-outlined text-outline">schedule</span>
+</button>
+</form>
+<form method="POST" action="{% url 'update_status' report.id %}">
+{% csrf_token %}
+<input type="hidden" name="status" value="in_progress">
+<button type="submit" class="w-full py-3 px-4 bg-primary-container text-on-primary-container rounded-lg text-sm flex justify-between items-center hover:bg-primary-fixed transition-colors">
+Set to In Progress <span class="material-symbols-outlined">engineering</span>
+</button>
+</form>
+<form method="POST" action="{% url 'update_status' report.id %}">
+{% csrf_token %}
+<input type="hidden" name="status" value="resolved">
+<button type="submit" class="w-full py-3 px-4 border border-outline-variant rounded-lg text-sm flex justify-between items-center hover:bg-[#dcfce7] hover:border-[#86efac] hover:text-[#166534] transition-colors text-on-surface">
+Mark as Resolved <span class="material-symbols-outlined text-outline">check_circle</span>
+</button>
+</form>
+</div>
+</div>
+
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+<h3 class="text-xs text-on-surface-variant uppercase tracking-wider mb-4 font-semibold">Coordinate with Department</h3>
+<form method="POST" action="{% url 'assign_report' report.id %}">
+{% csrf_token %}
+<div class="grid grid-cols-2 gap-2">
+{% for dept in departments %}
+<button type="submit" name="department" value="{{ dept.id }}"
+  class="py-2.5 px-3 border rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-surface-container transition-colors group
+  {% if assignment.department_id == dept.id %}border-2 border-primary bg-primary-fixed-dim bg-opacity-20{% else %}border-outline-variant{% endif %}">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<span class="text-xs text-center text-on-surface">{{ dept.name }}</span>
+</button>
+{% empty %}
+<p class="text-sm text-on-surface-variant col-span-2">No departments yet. Add via Settings.</p>
+{% endfor %}
+</div>
+</form>
+</div>
+
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant flex-1 flex flex-col">
+<h3 class="text-xs text-on-surface-variant uppercase tracking-wider mb-4 font-semibold">Internal Notes &amp; Updates</h3>
+<form method="POST" action="{% url 'add_note' report.id %}" class="flex flex-col flex-1">
+{% csrf_token %}
+<textarea name="note" class="w-full flex-1 min-h-[100px] rounded-lg border border-outline-variant p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary resize-none mb-3 bg-surface" placeholder="Add coordination notes for staff here..."></textarea>
+<div class="flex justify-end">
+<button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold hover:bg-primary-container transition-colors">
+Post Update</button>
+</div>
+</form>
+
+<div class="mt-6 pt-4 border-t border-outline-variant">
+<h4 class="text-xs text-on-surface-variant uppercase tracking-wider mb-3 font-semibold">Recent Activity</h4>
+<div class="space-y-4">
+{% for log in status_logs %}
+<div class="flex gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px]">history</span>
+</div>
+<div>
+<p class="text-sm text-on-surface">{{ log.notes|default:"Status updated" }}</p>
+<p class="text-xs text-outline">
+{% if log.changed_by %}By {{ log.changed_by.username }}{% else %}By System{% endif %}
+- {{ log.timestamp|date:"M d, Y h:i A" }}</p>
+</div>
+</div>
+{% empty %}
+<p class="text-sm text-on-surface-variant">No activity yet.</p>
+{% endfor %}
+</div>
+</div>
+</div>
+
+</aside>
+</main>
+</body>
+</html>

@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Submit Report - CityWatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: {
+"colors": {
+"primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+"on-primary-container": "#86a0cd", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+"surface": "#f7fafc", "on-surface": "#181c1e", "on-surface-variant": "#43474e",
+"surface-container": "#ebeef0", "surface-container-low": "#f1f4f6", "surface-container-lowest": "#ffffff",
+"outline": "#74777f", "outline-variant": "#c4c6cf", "error": "#ba1a1a", "background": "#f7fafc",
+"primary-fixed": "#d6e3ff", "on-primary-fixed": "#001b3c"
+},
+"borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}
+}}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased">
+<div class="flex min-h-screen w-full">
+
+<aside class="w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col sticky top-0 h-screen z-50 flex-shrink-0">
+<div class="p-6 border-b border-outline-variant">
+<a class="text-xl font-bold text-primary" href="{% url 'resident_dashboard' %}">CityWatch</a>
+</div>
+<nav class="flex-grow p-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'resident_dashboard' %}">
+<span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-semibold text-sm" href="{% url 'report_create' %}">
+<span class="material-symbols-outlined">add_circle</span> Submit Report</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'report_list' %}">
+<span class="material-symbols-outlined">folder_open</span> My Reports</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'public_board' %}">
+<span class="material-symbols-outlined">public</span> Public Board</a>
+</nav>
+<div class="p-4 border-t border-outline-variant flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-error hover:bg-error-container transition-colors text-sm font-semibold" href="{% url 'logout' %}">
+<span class="material-symbols-outlined">logout</span> Logout</a>
+</div>
+</aside>
+
+<div class="flex-grow flex flex-col min-w-0">
+<header class="h-16 border-b border-outline-variant bg-surface flex items-center justify-end px-8 sticky top-0 z-40 w-full">
+<span class="text-sm font-semibold text-on-surface">{{ request.user.username }}</span>
+</header>
+
+<main class="flex-grow max-w-6xl mx-auto w-full px-8 py-12">
+<div class="mb-6">
+<h1 class="text-3xl font-semibold text-primary mb-1">{% if editing %}Edit Report{% else %}Submit a Report{% endif %}</h1>
+<p class="text-on-surface-variant max-w-2xl">Help keep our community safe and well-maintained. Provide details to assist our teams in resolving the issue quickly.</p>
+</div>
+
+{% if messages %}
+{% for message in messages %}
+<div class="mb-4 p-3 rounded bg-error-container text-error text-sm">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+{% csrf_token %}
+
+<div class="lg:col-span-8 flex flex-col gap-8">
+
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary-container text-on-primary-container p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[20px]">category</span>
+</div>
+<h2 class="font-semibold text-primary">1. Issue Category</h2>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+{% for value, label in form.category.field.choices %}
+<label class="cursor-pointer">
+<input class="peer sr-only" name="category" type="radio" value="{{ value }}" {% if form.category.value == value %}checked{% endif %}>
+<div class="border border-outline-variant rounded-lg p-3 text-center hover:bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary-fixed peer-checked:text-on-primary-fixed transition-all">
+<p class="text-sm">{{ label }}</p>
+</div>
+</label>
+{% endfor %}
+</div>
+</div>
+
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary-container text-on-primary-container p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+<h2 class="font-semibold text-primary">2. Description</h2>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1" for="title">Brief Title</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="title" name="title" placeholder="e.g., Pothole on Main St." type="text" value="{{ form.title.value|default:'' }}" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1" for="description">Detailed Description</label>
+<textarea class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none" id="description" name="description" placeholder="Please describe the issue..." rows="4" required>{{ form.description.value|default:'' }}</textarea>
+</div>
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1" for="urgency">Urgency Level</label>
+<select class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" id="urgency" name="urgency">
+<option value="low" {% if form.urgency.value == 'low' %}selected{% endif %}>Low</option>
+<option value="medium" {% if form.urgency.value == 'medium' %}selected{% endif %}>Medium</option>
+<option value="high" {% if form.urgency.value == 'high' %}selected{% endif %}>High</option>
+</select>
+</div>
+</div>
+</div>
+
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary-container text-on-primary-container p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<h2 class="font-semibold text-primary">3. Location</h2>
+</div>
+<div class="space-y-3">
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1" for="barangay">Barangay</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="barangay" name="barangay" placeholder="e.g., Poblacion" type="text" value="{{ form.barangay.value|default:'' }}" required>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1" for="latitude">Latitude (optional)</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="latitude" name="latitude" placeholder="14.9563" type="text" value="{{ form.latitude.value|default:'' }}">
+</div>
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1" for="longitude">Longitude (optional)</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="longitude" name="longitude" placeholder="120.8964" type="text" value="{{ form.longitude.value|default:'' }}">
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="lg:col-span-4 flex flex-col gap-8">
+
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary-container text-on-primary-container p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</div>
+<h2 class="font-semibold text-primary">Photo</h2>
+</div>
+<label class="block border-2 border-dashed border-outline-variant rounded-xl p-6 text-center hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-3xl text-outline mb-1 block">cloud_upload</span>
+<p class="text-sm text-primary mb-0.5">Click to upload</p>
+<p class="text-xs text-on-surface-variant">Max. 5MB</p>
+<input type="file" name="photo" accept="image/*" class="hidden">
+</label>
+</div>
+
+<div class="mt-2">
+<button class="w-full text-on-primary rounded-xl py-3 font-semibold transition-colors flex items-center justify-center gap-2 bg-primary hover:opacity-90" type="submit">
+<span class="material-symbols-outlined text-[20px]">send</span>
+{% if editing %}Update Report{% else %}Submit Report{% endif %}
+</button>
+<p class="text-center text-xs text-on-surface-variant mt-3">By submitting, you agree to our Terms.</p>
+</div>
+
+</div>
+</form>
+</main>
+</div>
+</div>
+</body>
+</html>

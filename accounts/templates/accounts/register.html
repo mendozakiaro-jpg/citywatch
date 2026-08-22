@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CityWatch - Resident Registration</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#167249",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#9ff5c1",
+                    "surface-bright": "#f7fafc",
+                    "surface": "#f7fafc",
+                    "secondary": "#0a6c44",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#86a0cd",
+                    "background": "#f7fafc",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#43474e",
+                    "surface-container": "#ebeef0",
+                    "primary-container": "#1a365d",
+                    "outline-variant": "#c4c6cf",
+                    "on-background": "#181c1e",
+                    "on-primary": "#ffffff",
+                    "outline": "#74777f",
+                    "primary": "#002045",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f1f4f6",
+                    "primary-fixed": "#d6e3ff",
+                    "on-surface": "#181c1e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+
+<header class="w-full top-0 bg-surface border-b border-outline-variant z-50">
+<div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+<a class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity" href="{% url 'login' %}">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_police</span>
+<span class="text-xl font-bold text-primary">CityWatch</span>
+</a>
+<div class="flex items-center gap-4 text-sm font-semibold">
+<a class="hidden sm:block text-primary hover:bg-surface-container transition-colors px-4 py-2 rounded-full" href="{% url 'login' %}">Login</a>
+</div>
+</div>
+</header>
+
+<main class="flex-1 flex flex-col lg:flex-row w-full h-full min-h-[calc(100vh-64px)]">
+
+<div class="hidden lg:block w-full lg:w-[55%] relative bg-surface-variant flex-shrink-0">
+<img alt="" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLsEHZKVaALLBypPFXlA_G2ywR4XzykWVgnmWX9VDR_OEh1g39-zmFBD-C3qjNEVDzkNb9svf4T5hL72-iB8FHglLGepNojJRnIW8H1tN6pG_EfMeq2S4oM7hxco5NRgXzf77Xi313taKD2yJX3i2wMqbZdxNQe2AaqSDx04907RjWA7L4cxJRaimgIsXVEzLleWkqrfUsswkKxzcydqMVN4F07e1BjrKSBTaQ3QZqH2f0_aqkf4yq-YKIl4">
+<div class="absolute inset-0 bg-black/40"></div>
+<div class="absolute bottom-12 left-12 right-12 text-white">
+<h2 class="text-3xl font-semibold mb-2 text-white">Empowering Our Community.</h2>
+<p class="text-lg opacity-90 text-white max-w-lg">Join the network of residents committed to maintaining a safe, responsive, and thriving neighborhood.</p>
+</div>
+</div>
+
+<div class="w-full lg:w-[45%] flex items-center justify-center bg-surface-container-lowest p-8 md:p-12 lg:px-24 overflow-y-auto">
+<div class="w-full max-w-md py-12 lg:py-0 space-y-8">
+
+<div class="space-y-2 text-center lg:text-left">
+<h1 class="text-2xl lg:text-3xl font-semibold text-on-surface">Resident Registration</h1>
+<p class="text-base text-on-surface-variant">Create an account to report issues and stay informed.</p>
+</div>
+
+{% if messages %}
+{% for message in messages %}
+<div class="p-3 rounded bg-error-container text-on-error-container text-sm">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form method="POST" class="space-y-5">
+{% csrf_token %}
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="fullName">Full Name</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="fullName" name="fullName" placeholder="Juan Dela Cruz" required type="text">
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="username">Username</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="username" name="username" placeholder="juandelacruz" required type="text">
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="email">Email Address</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="email" name="email" placeholder="juan@example.com" required type="email">
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="mobile">Mobile Number</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="mobile" name="mobile" placeholder="0912 345 6789" required type="tel">
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="barangay">Barangay</label>
+<div class="relative">
+<select class="appearance-none w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface pr-10" id="barangay" name="barangay" required>
+<option disabled value="">Select your Barangay</option>
+<option value="Poblacion">Poblacion</option>
+<option value="Tangos">Tangos</option>
+<option value="Santa Barbara">Santa Barbara</option>
+<option value="Sabang">Sabang</option>
+<option value="Concepcion">Concepcion</option>
+<option value="Pagala">Pagala</option>
+<option value="Matimbubong">Matimbubong</option>
+<option value="Other">Other</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="password">Password</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface" id="password" name="password" placeholder="••••••••" required type="password">
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="confirm_password">Confirm Password</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface" id="confirm_password" name="confirm_password" placeholder="••••••••" required type="password">
+</div>
+
+<div class="pt-2">
+<p class="text-xs text-on-surface-variant text-center lg:text-left">
+                            By registering, you agree to our <a class="text-primary hover:underline font-bold" href="#">Terms of Service</a> and <a class="text-primary hover:underline font-bold" href="#">Privacy Policy</a>.
+                        </p>
+</div>
+
+<div class="pt-4">
+<button class="w-full min-h-[44px] py-3 bg-primary text-on-primary rounded font-semibold text-sm hover:bg-primary/90 transition-colors flex justify-center items-center gap-2" type="submit">
+<span>Create Account</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</form>
+
+<div class="text-center pt-4 border-t border-outline-variant/30">
+<p class="text-base text-on-surface-variant">
+                        Already have an account? 
+                        <a class="text-primary font-bold hover:underline ml-1" href="{% url 'login' %}">Sign In</a>
+</p>
+</div>
+
+</div>
+</div>
+</main>
+</body>
+</html>

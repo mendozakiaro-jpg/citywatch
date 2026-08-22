@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Public Board - CityWatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: {
+"colors": {
+"primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+"on-primary-container": "#86a0cd", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+"on-secondary-container": "#167249", "surface": "#f7fafc", "on-surface": "#181c1e",
+"on-surface-variant": "#43474e", "surface-container": "#ebeef0", "surface-container-low": "#f1f4f6",
+"surface-container-lowest": "#ffffff", "outline": "#74777f", "outline-variant": "#c4c6cf",
+"background": "#f7fafc", "tertiary-container": "#493100", "on-tertiary-container": "#cb9524"
+},
+"borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}
+}}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+
+<header class="w-full bg-surface border-b border-outline-variant z-50">
+<div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+<a class="flex items-center gap-2 text-primary" href="{% url 'public_board' %}">
+<span class="material-symbols-outlined">location_city</span>
+<span class="text-xl font-bold">CityWatch</span>
+</a>
+<div class="flex items-center gap-4 text-sm font-semibold">
+<a class="text-primary hover:bg-surface-container px-4 py-2 rounded-full transition-colors" href="{% url 'login' %}">Login</a>
+<a class="bg-primary text-on-primary px-6 py-2 rounded-full hover:opacity-90 transition-opacity" href="{% url 'register' %}">Register</a>
+</div>
+</div>
+</header>
+
+<main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+<div class="mb-8">
+<h2 class="text-3xl font-semibold text-primary mb-2">Community Transparency Board</h2>
+<p class="text-lg text-on-surface-variant">View and track all community-reported issues and their current resolution status.</p>
+</div>
+
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant">
+<h3 class="text-xs text-on-surface-variant mb-2 uppercase tracking-wider">Total Issues Reported</h3>
+<p class="text-4xl font-bold text-primary">{{ total_reports }}</p>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant">
+<h3 class="text-xs text-on-surface-variant mb-2 uppercase tracking-wider">Resolved</h3>
+<p class="text-4xl font-bold text-secondary">{{ resolved_count }}</p>
+</div>
+</section>
+
+<form method="GET" class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant flex flex-wrap gap-4 items-center mb-8">
+<select name="status" onchange="this.form.submit()" class="bg-surface border border-outline-variant text-sm rounded-lg p-2">
+<option value="">All Statuses</option>
+<option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+<option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+<option value="resolved" {% if request.GET.status == 'resolved' %}selected{% endif %}>Resolved</option>
+</select>
+<select name="category" onchange="this.form.submit()" class="bg-surface border border-outline-variant text-sm rounded-lg p-2">
+<option value="">All Categories</option>
+<option value="road" {% if request.GET.category == 'road' %}selected{% endif %}>Road</option>
+<option value="streetlight" {% if request.GET.category == 'streetlight' %}selected{% endif %}>Streetlight</option>
+<option value="drainage" {% if request.GET.category == 'drainage' %}selected{% endif %}>Drainage/Flooding</option>
+<option value="facility" {% if request.GET.category == 'facility' %}selected{% endif %}>Public Facility</option>
+</select>
+</form>
+
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+{% for report in reports %}
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+<div class="h-40 relative overflow-hidden bg-surface-container">
+{% if report.photo %}
+<img alt="{{ report.title }}" class="w-full h-full object-cover" src="{{ report.photo.url }}">
+{% else %}
+<div class="w-full h-full flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-outline">image</span>
+</div>
+{% endif %}
+{% if report.status == 'pending' %}
+<div class="absolute top-3 right-3 bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-xs font-semibold">Pending</div>
+{% elif report.status == 'in_progress' %}
+<div class="absolute top-3 right-3 bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-xs font-semibold">In Progress</div>
+{% elif report.status == 'resolved' %}
+<div class="absolute top-3 right-3 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-semibold">Resolved</div>
+{% endif %}
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-on-surface-variant font-mono">#CW-{{ report.id }}</span>
+<span class="text-xs text-primary font-semibold bg-surface-container px-2 py-0.5 rounded">{{ report.get_category_display }}</span>
+</div>
+<h4 class="text-base font-semibold text-on-surface mb-3 flex-1">{{ report.title }}</h4>
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-[16px]">location_on</span> {{ report.barangay }}
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span> {{ report.date_submitted|date:"M d, Y" }}
+</div>
+</div>
+</div>
+</article>
+{% empty %}
+<div class="col-span-full text-center py-16 text-on-surface-variant">No reports yet.</div>
+{% endfor %}
+</section>
+</main>
+</body>
+</html>

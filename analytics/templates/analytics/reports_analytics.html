@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Analytics - CityWatch Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    "colors": {
+      "primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+      "on-primary-container": "#86a0cd", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+      "on-secondary-container": "#167249", "surface": "#f7fafc", "on-surface": "#181c1e",
+      "on-surface-variant": "#43474e", "surface-container": "#ebeef0", "surface-container-low": "#f1f4f6",
+      "surface-container-lowest": "#ffffff", "outline": "#74777f", "outline-variant": "#c4c6cf"
+    },
+    "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }
+  }}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-surface text-on-surface font-sans flex min-h-screen">
+
+<aside class="hidden md:flex flex-col h-screen sticky top-0 left-0 p-4 bg-surface-container-low w-64 border-r border-outline-variant">
+<div class="mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[40px]">location_city</span>
+<div class="flex flex-col">
+<h1 class="text-xl font-bold text-primary">Admin Portal</h1>
+<p class="text-xs text-on-surface-variant">Baliwag City</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'analytics_dashboard' %}">
+<span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'admin_report_list' %}">
+<span class="material-symbols-outlined">description</span> Reports</a>
+<a class="flex items-center gap-3 p-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold text-sm" href="{% url 'reports_analytics' %}">
+<span class="material-symbols-outlined">analytics</span> Analytics</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'map_view' %}">
+<span class="material-symbols-outlined">map</span> Map View</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'user_list' %}">
+<span class="material-symbols-outlined">group</span> Users</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'department_list' %}">
+<span class="material-symbols-outlined">settings</span> Settings</a>
+</nav>
+<a href="{% url 'logout' %}" class="mt-auto flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-primary text-on-primary hover:opacity-90 text-sm font-bold">
+<span class="material-symbols-outlined">logout</span> Log Out</a>
+</aside>
+
+<main class="flex-1 flex flex-col">
+<header class="flex justify-between items-center w-full px-6 md:px-16 h-16 sticky top-0 z-50 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4 ml-auto">
+<span class="text-sm font-semibold text-on-surface">{{ request.user.username }}</span>
+</div>
+</header>
+
+<div class="p-6 md:p-16 flex-1 max-w-7xl mx-auto w-full">
+<h2 class="text-3xl font-semibold text-primary mb-2">Analytics</h2>
+<p class="text-on-surface-variant mb-8">Breakdown of {{ total_reports }} total reports across categories, barangays, and status.</p>
+
+{% if avg_resolution_days %}
+<div class="bg-white border border-outline-variant rounded-xl p-6 mb-8 flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-container p-3 rounded-full text-2xl">schedule</span>
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Average Resolution Time</p>
+<p class="text-3xl font-bold text-on-surface">{{ avg_resolution_days }} days</p>
+</div>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+<div class="bg-white border border-outline-variant rounded-xl p-6">
+<h3 class="text-lg font-semibold text-primary mb-4">By Category</h3>
+<div class="flex flex-col gap-3">
+{% for item in category_data %}
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span class="text-on-surface capitalize">{{ item.label }}</span>
+<span class="text-on-surface-variant">{{ item.count }} ({{ item.percent }}%)</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bar-fill bg-primary h-2 rounded-full" data-percent="{{ item.percent }}"></div>
+</div>
+</div>
+{% empty %}
+<p class="text-sm text-on-surface-variant">No data yet.</p>
+{% endfor %}
+</div>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl p-6">
+<h3 class="text-lg font-semibold text-primary mb-4">By Barangay</h3>
+<div class="flex flex-col gap-3">
+{% for item in barangay_data %}
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span class="text-on-surface">{{ item.label }}</span>
+<span class="text-on-surface-variant">{{ item.count }} ({{ item.percent }}%)</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bar-fill bg-secondary h-2 rounded-full" data-percent="{{ item.percent }}"></div>
+</div>
+</div>
+{% empty %}
+<p class="text-sm text-on-surface-variant">No data yet.</p>
+{% endfor %}
+</div>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl p-6">
+<h3 class="text-lg font-semibold text-primary mb-4">By Status</h3>
+<div class="flex flex-col gap-3">
+{% for item in status_data %}
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span class="text-on-surface capitalize">{{ item.label }}</span>
+<span class="text-on-surface-variant">{{ item.count }} ({{ item.percent }}%)</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bar-fill h-2 rounded-full" style="background-color:#d97706" data-percent="{{ item.percent }}"></div>
+</div>
+</div>
+{% empty %}
+<p class="text-sm text-on-surface-variant">No data yet.</p>
+{% endfor %}
+</div>
+</div>
+
+</div>
+</div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.bar-fill').forEach(function (bar) {
+    var percent = bar.getAttribute('data-percent') || '0';
+    bar.style.width = percent + '%';
+  });
+});
+</script>
+
+</body>
+</html>

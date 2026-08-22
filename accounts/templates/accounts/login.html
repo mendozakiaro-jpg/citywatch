@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="h-full bg-background" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CityWatch - Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#eef1f3",
+                    "inverse-primary": "#adc7f7",
+                    "surface-variant": "#e0e3e5",
+                    "tertiary": "#2d1d00",
+                    "on-primary-fixed-variant": "#2d476f",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed": "#001b3c",
+                    "secondary-fixed-dim": "#83d8a6",
+                    "tertiary-fixed": "#ffdeaa",
+                    "background": "#f7fafc",
+                    "on-surface-variant": "#43474e",
+                    "surface-container": "#ebeef0",
+                    "surface-dim": "#d7dadc",
+                    "secondary-container": "#9ff5c1",
+                    "secondary": "#0a6c44",
+                    "on-background": "#181c1e",
+                    "on-surface": "#181c1e",
+                    "surface-container-high": "#e5e9eb",
+                    "primary": "#002045",
+                    "surface-bright": "#f7fafc",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#c4c6cf",
+                    "on-tertiary-fixed": "#271900",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "outline": "#74777f",
+                    "error": "#ba1a1a",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#002111",
+                    "tertiary-container": "#493100",
+                    "on-primary-container": "#86a0cd",
+                    "inverse-surface": "#2d3133",
+                    "on-tertiary-container": "#cb9524",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#9ff5c1",
+                    "tertiary-fixed-dim": "#f8bc4b",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#adc7f7",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#5f4100",
+                    "on-secondary-fixed-variant": "#005231",
+                    "surface-container-low": "#f1f4f6",
+                    "primary-container": "#1a365d",
+                    "surface-tint": "#455f88",
+                    "primary-fixed": "#d6e3ff",
+                    "surface": "#f7fafc",
+                    "on-secondary-container": "#167249"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="h-full bg-background font-body-md text-on-surface antialiased flex flex-col min-h-screen">
+<main class="flex-grow flex items-center justify-center p-6 md:p-16 relative" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_aN60ALb3MkJhxWpW4-fMOZlxWlZ9VfiARWrF7xfwmnHLnpn-axhLXuywCqEIcXz87P_H7VNJbZWw9g8fe7Q-u8I5F-V2pCyAtU2n1ZRkIYXPDRMvBr1bOZ4T-beJwICe-eCaL_uiNcPLQO01btTwZiBiHlau3qFAXdiuA4zd8OeMPnIcdKzDHaxozOuF_qDyGmVba4G6TPt02i2Lgk_OyVtQDeO90osi1p2Sfk-FKIamhcnjgr9ECA'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div class="absolute inset-0 bg-primary/60 pointer-events-none"></div>
+<div class="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_16px_32px_-16px_rgba(0,32,69,0.1)] p-8 md:p-12 relative z-10">
+<div class="flex flex-col items-center mb-8">
+<span class="material-symbols-outlined text-primary text-[48px] mb-4">location_city</span>
+<h1 class="text-3xl font-bold text-primary text-center">CityWatch</h1>
+<h2 class="text-xl font-semibold text-on-surface-variant mt-2">Sign In</h2>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="mb-4 p-3 rounded bg-error-container text-on-error-container text-sm">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<form method="POST" class="space-y-6">
+{% csrf_token %}
+<div>
+<label class="block font-medium text-sm text-on-surface mb-2" for="username">Username</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">badge</span>
+</div>
+<input autocomplete="username" class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded bg-surface-container-lowest text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors h-[44px]" id="username" name="username" placeholder="Enter your username" required type="text"/>
+</div>
+</div>
+<div>
+<label class="block font-medium text-sm text-on-surface mb-2" for="password">Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<input autocomplete="current-password" class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded bg-surface-container-lowest text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors h-[44px]" id="password" name="password" placeholder="••••••••" required type="password"/>
+</div>
+</div>
+<div class="flex items-center justify-between mt-6">
+<button class="w-full flex justify-center py-3 px-4 border border-transparent rounded bg-primary text-on-primary font-medium hover:bg-primary-container focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary h-[44px] items-center transition-colors" type="submit">
+                        Sign In
+                    </button>
+</div>
+</form>
+<div class="mt-8 flex flex-col space-y-4 items-center">
+<a class="text-sm text-primary hover:text-primary-container underline-offset-4 hover:underline transition-colors" href="#">
+                    Forgot Password?
+                </a>
+<div class="w-full border-t border-outline-variant"></div>
+<a class="text-sm text-on-surface-variant hover:text-primary underline-offset-4 hover:underline transition-colors" href="{% url 'register' %}">
+                    Don't have an account? <span class="text-primary font-medium">Register here</span>
+                </a>
+</div>
+</div>
+</main>
+<footer class="bg-surface-container-low border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center w-full py-8 px-6 md:px-16 gap-4 container mx-auto max-w-7xl">
+<div class="text-sm font-medium text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">location_city</span>
+<span>CityWatch</span>
+</div>
+<div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+<a class="text-xs text-on-surface-variant hover:text-primary underline-offset-4 hover:underline transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs text-on-surface-variant hover:text-primary underline-offset-4 hover:underline transition-colors" href="#">Terms of Service</a>
+<a class="text-xs text-on-surface-variant hover:text-primary underline-offset-4 hover:underline transition-colors" href="#">Contact Support</a>
+</div>
+<div class="text-xs text-on-surface-variant">
+                © 2026 CityWatch. All rights reserved.
+            </div>
+</div>
+</footer>
+</body>
+</html>

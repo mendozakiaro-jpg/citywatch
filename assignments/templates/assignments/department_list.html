@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Settings - CityWatch Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    "colors": {
+      "primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+      "on-primary-container": "#86a0cd", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+      "on-secondary-container": "#167249", "surface": "#f7fafc", "on-surface": "#181c1e",
+      "on-surface-variant": "#43474e", "surface-container": "#ebeef0", "surface-container-low": "#f1f4f6",
+      "surface-container-lowest": "#ffffff", "outline": "#74777f", "outline-variant": "#c4c6cf",
+      "error": "#ba1a1a"
+    },
+    "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }
+  }}}
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+</head>
+<body class="bg-surface text-on-surface font-sans flex min-h-screen">
+
+<aside class="hidden md:flex flex-col h-screen sticky top-0 left-0 p-4 bg-surface-container-low w-64 border-r border-outline-variant">
+<div class="mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[40px]">location_city</span>
+<div class="flex flex-col">
+<h1 class="text-xl font-bold text-primary">Admin Portal</h1>
+<p class="text-xs text-on-surface-variant">Baliwag City</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'analytics_dashboard' %}">
+<span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'admin_report_list' %}">
+<span class="material-symbols-outlined">description</span> Reports</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'reports_analytics' %}">
+<span class="material-symbols-outlined">analytics</span> Analytics</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'map_view' %}">
+<span class="material-symbols-outlined">map</span> Map View</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm font-semibold" href="{% url 'user_list' %}">
+<span class="material-symbols-outlined">group</span> Users</a>
+<a class="flex items-center gap-3 p-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold text-sm" href="{% url 'department_list' %}">
+<span class="material-symbols-outlined">settings</span> Settings</a>
+</nav>
+<a href="{% url 'logout' %}" class="mt-auto flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-primary text-on-primary hover:opacity-90 text-sm font-bold">
+<span class="material-symbols-outlined">logout</span> Log Out</a>
+</aside>
+
+<main class="flex-1 flex flex-col">
+<header class="flex justify-between items-center w-full px-6 md:px-16 h-16 sticky top-0 z-50 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4 ml-auto">
+<span class="text-sm font-semibold text-on-surface">{{ request.user.username }}</span>
+</div>
+</header>
+
+<div class="p-6 md:p-16 flex-1 max-w-7xl mx-auto w-full">
+<h2 class="text-3xl font-semibold text-primary mb-2">Settings</h2>
+<p class="text-on-surface-variant mb-8">Manage departments used for report coordination.</p>
+
+{% if messages %}
+{% for message in messages %}
+<div class="mb-4 p-3 rounded bg-secondary-container text-on-secondary-container text-sm">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+<div class="lg:col-span-2 bg-white border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant">
+<h3 class="text-lg font-semibold text-primary">Departments</h3>
+</div>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant">
+<th class="p-4 text-xs text-on-surface-variant font-medium">Name</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium">Description</th>
+<th class="p-4 text-xs text-on-surface-variant font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody>
+{% for dept in departments %}
+<tr class="border-b border-outline-variant hover:bg-surface-container transition-colors">
+<td class="p-4 text-sm font-medium text-primary">{{ dept.name }}</td>
+<td class="p-4 text-sm text-on-surface-variant">{{ dept.description|default:"—" }}</td>
+<td class="p-4 text-right">
+<form method="POST" action="{% url 'department_delete' dept.id %}" onsubmit="return confirm('Remove this department?');">
+{% csrf_token %}
+<button type="submit" class="text-error text-sm font-semibold hover:underline">Remove</button>
+</form>
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="3" class="p-6 text-center text-on-surface-variant">No departments yet.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<div class="bg-white border border-outline-variant rounded-xl p-6">
+<h3 class="text-lg font-semibold text-primary mb-4">Add Department</h3>
+<form method="POST" class="flex flex-col gap-4">
+{% csrf_token %}
+<div>
+<label class="block text-sm font-medium mb-1">Name</label>
+<input type="text" name="name" required class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary">
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Description</label>
+<textarea name="description" rows="3" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"></textarea>
+</div>
+<button type="submit" class="bg-primary text-on-primary py-2 px-4 rounded-lg text-sm font-semibold hover:opacity-90">Add Department</button>
+</form>
+</div>
+
+</div>
+</div>
+</main>
+</body>
+</html>

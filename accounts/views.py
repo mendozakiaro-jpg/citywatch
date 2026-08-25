@@ -10,6 +10,26 @@ def admin_check(user):
     return user.is_staff or user.is_superuser
 
 
+def landing_view(request):
+    from reports.models import Report
+
+    if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            return redirect('analytics_dashboard')
+        else:
+            return redirect('resident_dashboard')
+
+    recent_reports = Report.objects.all().order_by('-date_submitted')[:6]
+    total_reports = Report.objects.count()
+    resolved_count = Report.objects.filter(status='resolved').count()
+
+    return render(request, 'accounts/landing.html', {
+        'recent_reports': recent_reports,
+        'total_reports': total_reports,
+        'resolved_count': resolved_count,
+    })
+
+
 def register_view(request):
     if request.method == 'POST':
         full_name = request.POST.get('fullName')

@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CityWatch - Baliwag City</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: {
+"colors": {
+"primary": "#002045", "on-primary": "#ffffff", "primary-container": "#1a365d",
+"on-primary-container": "#86a0cd", "secondary": "#0a6c44", "secondary-container": "#9ff5c1",
+"on-secondary-container": "#167249", "surface": "#f7fafc", "on-surface": "#181c1e",
+"on-surface-variant": "#43474e", "surface-container": "#ebeef0", "surface-container-low": "#f1f4f6",
+"surface-container-lowest": "#ffffff", "outline": "#74777f", "outline-variant": "#c4c6cf",
+"background": "#f7fafc", "tertiary-container": "#493100", "on-tertiary-container": "#cb9524"
+},
+"borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}
+}}}
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+/* Scroll reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* Hero fade in on load */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-animate { animation: fadeInUp 0.9s ease forwards; }
+.hero-animate-delay { animation: fadeInUp 0.9s ease forwards; animation-delay: 0.2s; opacity: 0; }
+.hero-animate-delay2 { animation: fadeInUp 0.9s ease forwards; animation-delay: 0.4s; opacity: 0; }
+
+/* Floating badge */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.float-anim { animation: float 4s ease-in-out infinite; }
+
+/* Count-up number styling handled by JS */
+.stat-number { font-variant-numeric: tabular-nums; }
+
+/* Card hover lift */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(0, 32, 69, 0.15);
+}
+
+/* Nav underline animation */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #002045;
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after { width: 100%; }
+
+/* Gradient shimmer for hero background accent */
+.gradient-shimmer {
+  background: linear-gradient(120deg, #002045 0%, #1a365d 50%, #0a6c44 100%);
+  background-size: 200% 200%;
+  animation: shimmer 8s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+</style>
+</head>
+<body class="bg-surface text-on-surface font-sans antialiased">
+
+<!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full bg-surface/90 backdrop-blur-md border-b border-outline-variant z-50">
+<div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+<a class="flex items-center gap-2 text-primary" href="{% url 'landing' %}">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_city</span>
+<span class="text-xl font-bold">CityWatch</span>
+</a>
+<nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-on-surface-variant">
+<a class="nav-link hover:text-primary transition-colors" href="#about">About</a>
+<a class="nav-link hover:text-primary transition-colors" href="#board">Transparency Board</a>
+<a class="nav-link hover:text-primary transition-colors" href="#baliwag">Baliwag City</a>
+</nav>
+<div class="flex items-center gap-3">
+<a class="text-primary hover:bg-surface-container px-4 py-2 rounded-full transition-colors text-sm font-semibold" href="{% url 'login' %}">Login</a>
+<a class="bg-primary text-on-primary px-5 py-2 rounded-full hover:opacity-90 transition-opacity text-sm font-semibold" href="{% url 'register' %}">Register</a>
+</div>
+</div>
+</header>
+
+<!-- HERO -->
+<section class="relative pt-32 pb-20 px-6 overflow-hidden gradient-shimmer">
+<div class="absolute inset-0 bg-black/30"></div>
+<div class="relative max-w-5xl mx-auto text-center">
+<span class="hero-animate inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm font-medium mb-6 border border-white/20">
+<span class="material-symbols-outlined text-[16px]">location_on</span> Serving Baliwag City, Bulacan
+</span>
+<h1 class="hero-animate text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+Your Voice, Our City's<br>Progress
+</h1>
+<p class="hero-animate-delay text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">
+Report infrastructure and public safety concerns in your barangay. Track resolution progress in real time. Together, we build a safer, more responsive Baliwag.
+</p>
+<div class="hero-animate-delay2 flex flex-col sm:flex-row gap-4 justify-center">
+<a href="{% url 'register' %}" class="bg-white text-primary px-8 py-3.5 rounded-full font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add_circle</span> Report an Issue
+</a>
+<a href="#board" class="bg-white/10 backdrop-blur-sm text-white border border-white/30 px-8 py-3.5 rounded-full font-semibold hover:bg-white/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">public</span> View Transparency Board
+</a>
+</div>
+</div>
+
+<!-- Floating stat badge -->
+<div class="float-anim relative mt-16 max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 bg-white rounded-2xl shadow-2xl p-6 mx-6">
+<div class="text-center">
+<p class="stat-number text-3xl font-extrabold text-primary" data-count="{{ total_reports }}">0</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wide mt-1">Reports Filed</p>
+</div>
+<div class="text-center">
+<p class="stat-number text-3xl font-extrabold text-secondary" data-count="{{ resolved_count }}">0</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wide mt-1">Resolved</p>
+</div>
+<div class="text-center">
+<p class="stat-number text-3xl font-extrabold text-primary" data-count="27">0</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wide mt-1">Barangays</p>
+</div>
+<div class="text-center">
+<p class="stat-number text-3xl font-extrabold text-secondary" data-count="175910">0</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wide mt-1">Residents</p>
+</div>
+</div>
+</section>
+
+<!-- ABOUT CITYWATCH -->
+<section id="about" class="max-w-6xl mx-auto px-6 py-24">
+<div class="reveal text-center mb-16">
+<span class="text-secondary font-semibold text-sm uppercase tracking-wider">What is CityWatch</span>
+<h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">A Smarter Way to Report Community Issues</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto mt-4">
+CityWatch bridges the gap between residents and the local government by digitizing the way infrastructure and public safety concerns are reported, tracked, and resolved.
+</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="reveal reveal-delay-1 hover-lift bg-surface-container-lowest border border-outline-variant rounded-2xl p-8">
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<h3 class="text-lg font-semibold text-on-surface mb-2">Report Instantly</h3>
+<p class="text-sm text-on-surface-variant">Submit reports on potholes, broken streetlights, flooding, and more — complete with photos and exact location.</p>
+</div>
+<div class="reveal reveal-delay-2 hover-lift bg-surface-container-lowest border border-outline-variant rounded-2xl p-8">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">timeline</span>
+</div>
+<h3 class="text-lg font-semibold text-on-surface mb-2">Track in Real Time</h3>
+<p class="text-sm text-on-surface-variant">Follow your report's journey from Pending to Resolved, with full status history and updates from LGU staff.</p>
+</div>
+<div class="reveal reveal-delay-3 hover-lift bg-surface-container-lowest border border-outline-variant rounded-2xl p-8">
+<div class="w-12 h-12 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<h3 class="text-lg font-semibold text-on-surface mb-2">Built for Transparency</h3>
+<p class="text-sm text-on-surface-variant">Every resident can view the Public Transparency Board — no login required — to see what's being addressed across the city.</p>
+</div>
+</div>
+</section>
+
+<!-- TRANSPARENCY BOARD PREVIEW -->
+<section id="board" class="bg-surface-container-low py-24 px-6">
+<div class="max-w-6xl mx-auto">
+<div class="reveal flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+<div>
+<span class="text-secondary font-semibold text-sm uppercase tracking-wider">Live Preview</span>
+<h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">Community Transparency Board</h2>
+<p class="text-on-surface-variant mt-2 max-w-xl">See what residents across Baliwag are reporting right now.</p>
+</div>
+<a href="{% url 'public_board' %}" class="text-primary font-semibold hover:underline flex items-center gap-1 whitespace-nowrap">
+View Full Board <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+{% for report in recent_reports %}
+<div class="reveal reveal-delay-{{ forloop.counter0|add:1 }} hover-lift bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex flex-col">
+<div class="h-36 bg-surface-container relative overflow-hidden">
+{% if report.photo %}
+<img src="{{ report.photo.url }}" class="w-full h-full object-cover" alt="{{ report.title }}">
+{% else %}
+<div class="w-full h-full flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-outline">image</span>
+</div>
+{% endif %}
+{% if report.status == 'pending' %}
+<span class="absolute top-3 right-3 bg-tertiary-container text-on-tertiary-container px-2.5 py-1 rounded-full text-xs font-semibold">Pending</span>
+{% elif report.status == 'in_progress' %}
+<span class="absolute top-3 right-3 bg-primary-container text-on-primary-container px-2.5 py-1 rounded-full text-xs font-semibold">In Progress</span>
+{% elif report.status == 'resolved' %}
+<span class="absolute top-3 right-3 bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full text-xs font-semibold">Resolved</span>
+{% endif %}
+</div>
+<div class="p-4">
+<span class="text-xs text-primary font-semibold">{{ report.get_category_display }}</span>
+<h4 class="font-semibold text-on-surface mt-1">{{ report.title }}</h4>
+<p class="text-xs text-on-surface-variant mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> {{ report.barangay }}
+</p>
+</div>
+</div>
+{% empty %}
+<div class="col-span-full text-center py-12 text-on-surface-variant">
+No reports yet. Be the first to report an issue in your barangay.
+</div>
+{% endfor %}
+</div>
+</div>
+</section>
+
+<!-- ABOUT BALIWAG CITY -->
+<section id="baliwag" class="max-w-6xl mx-auto px-6 py-24">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="reveal">
+<span class="text-secondary font-semibold text-sm uppercase tracking-wider">About the City</span>
+<h2 class="text-3xl md:text-4xl font-bold text-primary mt-2 mb-6">Baliwag City, Bulacan</h2>
+<p class="text-on-surface-variant leading-relaxed mb-4">
+Founded in 1733 and officially recognized as a city in December 2022, Baliwag has grown into one of the most progressive centers of commerce, transportation, and education in Northern Bulacan. Known as the <strong class="text-on-surface">"Buntal Hat Capital of the Philippines,"</strong> the city blends rich Spanish-era heritage with modern civic development.
+</p>
+<p class="text-on-surface-variant leading-relaxed">
+Today, Baliwag is home to over 175,000 residents across 27 barangays. CityWatch was built to support the city's continued growth — giving every resident a direct channel to help keep their community safe, clean, and well-maintained.
+</p>
+</div>
+<div class="reveal reveal-delay-2 grid grid-cols-2 gap-4">
+<div class="hover-lift bg-primary text-white rounded-2xl p-6">
+<p class="text-3xl font-extrabold">27</p>
+<p class="text-sm text-white/80 mt-1">Barangays</p>
+</div>
+<div class="hover-lift bg-secondary text-white rounded-2xl p-6">
+<p class="text-3xl font-extrabold">175K+</p>
+<p class="text-sm text-white/80 mt-1">Residents</p>
+</div>
+<div class="hover-lift bg-surface-container-lowest border border-outline-variant rounded-2xl p-6">
+<p class="text-3xl font-extrabold text-primary">1733</p>
+<p class="text-sm text-on-surface-variant mt-1">Founded</p>
+</div>
+<div class="hover-lift bg-surface-container-lowest border border-outline-variant rounded-2xl p-6">
+<p class="text-3xl font-extrabold text-primary">2022</p>
+<p class="text-sm text-on-surface-variant mt-1">Cityhood</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="max-w-4xl mx-auto px-6 pb-24">
+<div class="reveal gradient-shimmer rounded-3xl p-12 text-center relative overflow-hidden">
+<div class="absolute inset-0 bg-black/20"></div>
+<div class="relative">
+<h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Ready to make a difference in your barangay?</h2>
+<p class="text-white/85 mb-8 max-w-xl mx-auto">Join your fellow residents in building a more responsive Baliwag City.</p>
+<a href="{% url 'register' %}" class="inline-flex items-center gap-2 bg-white text-primary px-8 py-3.5 rounded-full font-semibold hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">how_to_reg</span> Create Your Account
+</a>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant py-8 px-6">
+<div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2 text-primary font-semibold">
+<span class="material-symbols-outlined">location_city</span> CityWatch
+</div>
+<p class="text-xs text-on-surface-variant">© 2026 CityWatch — Baliwag City Community Reporting System</p>
+</div>
+</footer>
+
+<script>
+// Scroll reveal animation
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+// Count-up animation for stats
+const statEls = document.querySelectorAll('.stat-number');
+const animateCount = (el) => {
+  const target = parseInt(el.getAttribute('data-count'), 10) || 0;
+  const duration = 1500;
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString();
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target.toLocaleString();
+  }
+  requestAnimationFrame(step);
+};
+const statObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCount(entry.target);
+      statObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+statEls.forEach(el => statObserver.observe(el));
+</script>
+
+</body>
+</html>

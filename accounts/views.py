@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from .models import Profile
 
 
@@ -32,7 +34,8 @@ def landing_view(request):
 
 def register_view(request):
     if request.method == 'POST':
-        full_name = request.POST.get('fullName')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
         username = request.POST.get('username')
         email = request.POST.get('email')
         phone = request.POST.get('mobile')
@@ -44,6 +47,12 @@ def register_view(request):
             messages.error(request, 'Passwords do not match')
             return render(request, 'accounts/register.html')
 
+        try:
+            validate_password(password)
+        except ValidationError as error:
+            messages.error(request, ' '.join(error.messages))
+            return render(request, 'accounts/register.html')
+
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already taken')
             return render(request, 'accounts/register.html')
@@ -53,12 +62,9 @@ def register_view(request):
             return render(request, 'accounts/register.html')
 
         user = User.objects.create_user(username=username, email=email, password=password)
-        if full_name:
-            name_parts = full_name.strip().split(' ', 1)
-            user.first_name = name_parts[0]
-            if len(name_parts) > 1:
-                user.last_name = name_parts[1]
-            user.save()
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
 
         Profile.objects.create(user=user, role='resident', phone_number=phone, barangay=barangay)
 
@@ -95,6 +101,8 @@ def profile_view(request):
     if request.method == 'POST':
         profile.phone_number = request.POST.get('phone_number')
         profile.barangay = request.POST.get('barangay')
+        if request.FILES.get('profile_picture'):
+            profile.profile_picture = request.FILES['profile_picture']
         profile.save()
         messages.success(request, 'Profile updated successfully')
     return render(request, 'accounts/profile.html', {'profile': profile})

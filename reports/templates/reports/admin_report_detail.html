@@ -26,13 +26,13 @@
 <body class="bg-surface text-on-surface font-sans overflow-hidden">
 
 <nav class="h-full w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col p-4 overflow-y-auto z-50">
-<div class="mb-8 flex items-center gap-3">
+<a class="mb-8 flex items-center gap-3" href="{% url 'home' %}">
 <span class="material-symbols-outlined text-primary text-[40px]">location_city</span>
 <div class="flex flex-col">
 <h2 class="text-xl font-bold text-primary">Admin Portal</h2>
 <p class="text-on-surface-variant text-sm">Baliwag City</p>
 </div>
-</div>
+</a>
 <ul class="flex flex-col gap-2 flex-grow">
 <li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'analytics_dashboard' %}">
 <span class="material-symbols-outlined">dashboard</span> Dashboard</a></li>
@@ -101,7 +101,7 @@
 </div>
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-outline">person</span>
-<span>Reported by: {{ report.resident.username }}</span>
+<span>Reported by: {{ report.resident.get_full_name|default:report.resident.username }}</span>
 </div>
 </div>
 </div>
@@ -164,13 +164,13 @@ Mark as Resolved <span class="material-symbols-outlined text-outline">check_circ
 <h3 class="text-xs text-on-surface-variant uppercase tracking-wider mb-4 font-semibold">Coordinate with Department</h3>
 <form method="POST" action="{% url 'assign_report' report.id %}">
 {% csrf_token %}
-<div class="grid grid-cols-2 gap-2">
+<div id="department-grid" class="grid grid-cols-2 gap-2">
 {% for dept in departments %}
 <button type="submit" name="department" value="{{ dept.id }}"
-  class="py-2.5 px-3 border rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-surface-container transition-colors group
+  class="department-option py-2.5 px-3 border rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-surface-container transition-colors group {% if forloop.counter > 4 %}hidden{% endif %}
   {% if assignment.department_id == dept.id %}border-2 border-primary bg-primary-fixed-dim bg-opacity-20{% else %}border-outline-variant{% endif %}">
 <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
-<span class="material-symbols-outlined">apartment</span>
+<span class="material-symbols-outlined">{% if dept.name == 'Fire' %}local_fire_department{% elif dept.name == 'Health' %}medical_services{% elif dept.name == 'DPWH' %}construction{% elif dept.name == 'Barangay Tanod' %}local_police{% else %}apartment{% endif %}</span>
 </div>
 <span class="text-xs text-center text-on-surface">{{ dept.name }}</span>
 </button>
@@ -178,6 +178,7 @@ Mark as Resolved <span class="material-symbols-outlined text-outline">check_circ
 <p class="text-sm text-on-surface-variant col-span-2">No departments yet. Add via Settings.</p>
 {% endfor %}
 </div>
+{% if departments|length > 4 %}<button type="button" id="toggle-departments" class="mt-3 text-sm font-semibold text-primary hover:underline">See More</button>{% endif %}
 </form>
 </div>
 
@@ -216,5 +217,14 @@ Post Update</button>
 
 </aside>
 </main>
+<script>
+const toggleDepartments = document.getElementById('toggle-departments');
+if (toggleDepartments) {
+  toggleDepartments.addEventListener('click', () => {
+    document.querySelectorAll('.department-option:nth-child(n+5)').forEach((option) => option.classList.toggle('hidden'));
+    toggleDepartments.textContent = toggleDepartments.textContent === 'See More' ? 'See Less' : 'See More';
+  });
+}
+</script>
 </body>
 </html>

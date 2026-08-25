@@ -1,6 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+class Announcement(models.Model):
+    TYPE_CHOICES = [
+        ('news', 'News'),
+        ('advisory', 'Advisory'),
+    ]
+
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    announcement_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='news')
+    is_published = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_published = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['-date_published', '-date_created']
+
+    def __str__(self):
+        return self.title
+
 class Report(models.Model):
     CATEGORY_CHOICES = [
         ('road', 'Road'),

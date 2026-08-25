@@ -88,8 +88,10 @@
 
 <div class="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_16px_32px_-16px_rgba(0,32,69,0.1)] p-8 md:p-12 relative z-10">
 <div class="flex flex-col items-center mb-8">
+<a class="flex flex-col items-center" href="{% url 'home' %}" aria-label="Go to CityWatch home">
 <span class="material-symbols-outlined text-primary text-[48px] mb-4">location_city</span>
 <h1 class="text-3xl font-bold text-primary text-center">CityWatch</h1>
+</a>
 <h2 class="text-xl font-semibold text-on-surface-variant mt-2">Sign In</h2>
 </div>
 
@@ -118,7 +120,10 @@
 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 <span class="material-symbols-outlined text-outline">lock</span>
 </div>
-<input autocomplete="current-password" class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded bg-surface-container-lowest text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors h-[44px]" id="password" name="password" placeholder="••••••••" required type="password"/>
+<input autocomplete="current-password" class="block w-full pl-10 pr-12 py-3 border border-outline-variant rounded bg-surface-container-lowest text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors h-[44px]" id="password" name="password" placeholder="••••••••" required type="password"/>
+<button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-3 text-on-surface-variant hover:text-primary" aria-label="Show password">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
 </div>
 </div>
 <div class="flex items-center justify-between mt-6">
@@ -127,6 +132,18 @@
                     </button>
 </div>
 </form>
+<script>
+const passwordInput = document.getElementById('password');
+const togglePassword = document.getElementById('toggle-password');
+const passwordIcon = togglePassword.querySelector('.material-symbols-outlined');
+
+togglePassword.addEventListener('click', () => {
+  const isHidden = passwordInput.type === 'password';
+  passwordInput.type = isHidden ? 'text' : 'password';
+  togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+  passwordIcon.textContent = isHidden ? 'visibility_off' : 'visibility';
+});
+</script>
 <div class="mt-8 flex flex-col space-y-4 items-center">
 <a class="text-sm text-primary hover:text-primary-container underline-offset-4 hover:underline transition-colors" href="#">
                     Forgot Password?

@@ -29,7 +29,7 @@ tailwind.config = { theme: { extend: {
 
 <aside class="w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col sticky top-0 h-screen z-50 flex-shrink-0">
 <div class="p-6 border-b border-outline-variant">
-<a class="text-xl font-bold text-primary" href="{% url 'resident_dashboard' %}">CityWatch</a>
+<a class="text-xl font-bold text-primary" href="{% url 'home' %}">CityWatch</a>
 </div>
 <nav class="flex-grow p-4 flex flex-col gap-2">
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'resident_dashboard' %}">
@@ -38,6 +38,10 @@ tailwind.config = { theme: { extend: {
 <span class="material-symbols-outlined">add_circle</span> Submit Report</a>
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-semibold text-sm" href="{% url 'report_list' %}">
 <span class="material-symbols-outlined">folder_open</span> My Reports</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'public_board' %}">
+<span class="material-symbols-outlined">public</span> Public Board</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'announcements' %}">
+<span class="material-symbols-outlined">campaign</span> Announcements</a>
 </nav>
 <div class="p-4 border-t border-outline-variant flex flex-col gap-2">
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-error hover:bg-error-container transition-colors text-sm font-semibold" href="{% url 'logout' %}">
@@ -50,7 +54,14 @@ tailwind.config = { theme: { extend: {
 <a href="{% url 'report_list' %}" class="text-on-surface-variant hover:text-primary flex items-center gap-2 text-sm font-semibold">
 <span class="material-symbols-outlined">arrow_back</span> Back to My Reports
 </a>
-<span class="text-sm font-semibold text-on-surface">{{ request.user.username }}</span>
+<div class="flex items-center gap-4">
+<form method="GET" action="{% url 'public_board' %}" class="relative hidden sm:block w-full max-w-xs"><label class="sr-only" for="detail-search">Search reports or news</label><input id="detail-search" name="q" type="search" placeholder="Search reports or news..." class="w-full rounded-full border border-outline-variant bg-surface-container-low py-2 pl-10 pr-4 text-sm"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-base text-on-surface-variant">search</span></form>
+<button type="button" aria-label="Notifications" class="rounded-full p-2 text-on-surface-variant hover:bg-surface-container-low"><span class="material-symbols-outlined">notifications</span></button>
+<a class="flex items-center gap-2 text-sm font-semibold text-on-surface" href="{% url 'profile' %}">
+{% if request.user.profile.profile_picture %}<img class="w-8 h-8 rounded-full object-cover" src="{{ request.user.profile.profile_picture.url }}" alt="Profile picture">{% else %}<span class="material-symbols-outlined text-3xl text-on-surface-variant">account_circle</span>{% endif %}
+<span>{{ request.user.username }}</span>
+</a>
+</div>
 </header>
 
 <div class="flex-1 px-8 py-8 max-w-4xl mx-auto w-full">

@@ -26,13 +26,13 @@
 <body class="bg-surface text-on-surface font-sans h-screen flex overflow-hidden">
 
 <nav class="hidden md:flex flex-col h-screen sticky top-0 left-0 p-4 bg-surface-container-low border-r border-outline-variant w-64 z-40">
-<div class="mb-8 flex items-center gap-3">
+<a class="mb-8 flex items-center gap-3" href="{% url 'home' %}">
 <span class="material-symbols-outlined text-primary text-[40px]">location_city</span>
 <div class="flex flex-col">
 <h2 class="text-xl font-bold text-primary">Admin Portal</h2>
 <p class="text-on-surface-variant text-sm">Baliwag City</p>
 </div>
-</div>
+</a>
 <ul class="flex flex-col gap-2 flex-grow">
 <li><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-sm font-semibold" href="{% url 'analytics_dashboard' %}">
 <span class="material-symbols-outlined">dashboard</span> Dashboard</a></li>
@@ -60,9 +60,10 @@
 <p class="text-on-surface-variant">Review, track, and manage incoming civic reports.</p>
 </div>
 <form method="GET" class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+<input type="hidden" name="view" value="{{ view_mode }}">
 <div class="relative flex-grow sm:max-w-xs">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input name="q" value="{{ request.GET.q }}" class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:outline-none focus:border-primary h-[44px]" placeholder="Search reports..." type="text">
+<input name="q" value="{{ search_query }}" class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:outline-none focus:border-primary h-[44px]" placeholder="Search reports..." type="search">
 </div>
 <select name="status" onchange="this.form.submit()" class="px-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest h-[44px]">
 <option value="">All Status</option>
@@ -71,12 +72,24 @@
 <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
 <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
 </select>
+<select name="category" onchange="this.form.submit()" class="px-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest h-[44px]">
+<option value="">All Categories</option>
+{% for value, label in category_choices %}<option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+</select>
 <button type="submit" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-primary text-on-primary h-[44px]">
 <span class="material-symbols-outlined text-[18px]">filter_list</span> Filter
 </button>
 </form>
 </div>
 
+<div class="flex items-center justify-end mb-6">
+<div class="flex items-center bg-surface-container-low p-1 rounded-lg border border-outline-variant">
+<a href="?view=list{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" class="flex items-center gap-2 px-4 py-2 rounded-lg {% if view_mode == 'list' %}bg-primary text-on-primary{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} text-sm font-semibold transition-colors"><span class="material-symbols-outlined text-[18px]">list</span>List View</a>
+<a href="?view=visual{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" class="flex items-center gap-2 px-4 py-2 rounded-lg {% if view_mode == 'visual' %}bg-primary text-on-primary{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} text-sm font-semibold transition-colors"><span class="material-symbols-outlined text-[18px]">grid_view</span>Visual View</a>
+</div>
+</div>
+
+{% if view_mode == 'list' %}
 <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse min-w-[800px]">
@@ -95,7 +108,7 @@
 <td class="py-4 px-6">
 <div class="flex flex-col">
 <span class="font-bold text-primary">{{ report.title }}</span>
-<span class="text-xs text-on-surface-variant">Rep: {{ report.resident.username }}</span>
+<span class="text-xs text-on-surface-variant">Reported by: {{ report.resident.get_full_name|default:report.resident.username }}</span>
 </div>
 </td>
 <td class="py-4 px-6">
@@ -133,6 +146,24 @@ View Details</a>
 <span class="text-xs text-on-surface-variant">Showing {{ reports|length }} entries</span>
 </div>
 </div>
+{% else %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+{% for report in reports %}
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-all">
+<div class="h-48 bg-surface-container-low flex items-center justify-center overflow-hidden relative">
+{% if report.photo %}<img alt="{{ report.title }}" class="w-full h-full object-cover" src="{{ report.photo.url }}">{% else %}<span class="material-symbols-outlined text-6xl text-on-surface-variant opacity-20">image</span>{% endif %}
+{% if report.status == 'pending' %}<span class="absolute top-3 right-3 rounded-full bg-[#FEF08A] text-[#854D0E] px-2.5 py-1 text-xs font-bold">Pending</span>{% elif report.status == 'in_progress' %}<span class="absolute top-3 right-3 rounded-full bg-primary-container text-on-primary-container px-2.5 py-1 text-xs font-bold">In Progress</span>{% elif report.status == 'resolved' %}<span class="absolute top-3 right-3 rounded-full bg-secondary text-on-secondary px-2.5 py-1 text-xs font-bold">Resolved</span>{% else %}<span class="absolute top-3 right-3 rounded-full bg-gray-200 text-gray-800 px-2.5 py-1 text-xs font-bold">{{ report.get_status_display }}</span>{% endif %}
+</div>
+<div class="p-4 flex flex-col gap-2 flex-1">
+<div class="flex justify-between items-start gap-2"><h3 class="text-lg font-bold text-primary">{{ report.title }}</h3><span class="rounded bg-primary-fixed px-2 py-0.5 text-xs font-semibold text-primary">{{ report.get_category_display }}</span></div>
+<p class="text-xs text-on-surface-variant">Rep: {{ report.resident.get_full_name|default:report.resident.username }}</p>
+<div class="flex items-start gap-1 text-on-surface-variant mt-1"><span class="material-symbols-outlined text-[18px] text-secondary">location_on</span><span class="text-xs">{{ report.barangay }}</span></div>
+<div class="mt-auto pt-4 flex items-center justify-between border-t border-outline-variant"><span class="text-xs text-on-surface-variant">{{ report.date_submitted|date:"M d, Y" }}</span><a href="{% url 'admin_report_detail' report.id %}" class="text-primary font-bold text-xs hover:underline">View Details</a></div>
+</div>
+</article>
+{% empty %}<div class="col-span-full bg-surface-container-lowest border border-outline-variant rounded-xl p-12 text-center text-on-surface-variant">No reports found.</div>{% endfor %}
+</div>
+{% endif %}
 
 </div>
 </main>

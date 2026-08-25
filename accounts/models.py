@@ -13,6 +13,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True)
     barangay = models.CharField(max_length=100, blank=True)
     department = models.CharField(max_length=100, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

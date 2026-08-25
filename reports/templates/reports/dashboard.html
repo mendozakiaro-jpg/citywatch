@@ -29,7 +29,7 @@ tailwind.config = { theme: { extend: {
 
 <aside class="w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col sticky top-0 h-screen z-50 flex-shrink-0">
 <div class="p-6 border-b border-outline-variant">
-<a class="text-xl font-bold text-primary" href="{% url 'resident_dashboard' %}">CityWatch</a>
+<a class="text-xl font-bold text-primary" href="{% url 'home' %}">CityWatch</a>
 </div>
 <nav class="flex-grow p-4 flex flex-col gap-2">
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-semibold text-sm" href="{% url 'resident_dashboard' %}">
@@ -38,6 +38,10 @@ tailwind.config = { theme: { extend: {
 <span class="material-symbols-outlined">add_circle</span> Submit Report</a>
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'report_list' %}">
 <span class="material-symbols-outlined">folder_open</span> My Reports</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'public_board' %}">
+<span class="material-symbols-outlined">public</span> Public Board</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'announcements' %}">
+<span class="material-symbols-outlined">campaign</span> Announcements</a>
 </nav>
 <div class="p-4 border-t border-outline-variant flex flex-col gap-2">
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-semibold" href="{% url 'profile' %}">
@@ -49,13 +53,21 @@ tailwind.config = { theme: { extend: {
 
 <div class="flex-grow flex flex-col min-w-0">
 <header class="h-16 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-end px-8 sticky top-0 z-40 w-full">
-<div class="flex items-center gap-4">
+<div class="flex items-center gap-4 w-full justify-end">
 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-<span class="text-sm font-semibold text-on-surface">{{ request.user.username }}</span>
+<form method="GET" action="{% url 'public_board' %}" class="relative w-full max-w-xs">
+<label class="sr-only" for="dashboard-search">Search reports or news</label>
+<input id="dashboard-search" name="q" value="{{ search_query }}" type="search" placeholder="Search reports or news..." class="w-full rounded-full border border-outline-variant bg-background py-2 pl-10 pr-4 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-base text-on-surface-variant">search</span>
+</form>
+<a class="flex items-center gap-2 text-sm font-semibold text-on-surface" href="{% url 'profile' %}">
+{% if request.user.profile.profile_picture %}<img class="w-8 h-8 rounded-full object-cover" src="{{ request.user.profile.profile_picture.url }}" alt="Profile picture">{% else %}<span class="material-symbols-outlined text-3xl text-on-surface-variant">account_circle</span>{% endif %}
+<span>{{ request.user.username }}</span>
+</a>
 </div>
 </header>
 
-<main class="flex-grow w-full px-8 py-12 flex flex-col gap-12">
+<main class="flex-grow max-w-7xl mx-auto w-full px-5 md:px-16 py-8 md:py-12 flex flex-col gap-12">
 <section class="flex flex-col gap-4 max-w-4xl">
 <h1 class="text-4xl text-on-surface font-bold tracking-tight">Welcome back, {{ request.user.first_name|default:request.user.username }}</h1>
 <p class="text-lg text-on-surface-variant leading-relaxed">Stay informed about your neighborhood. Manage your civic reports, track community infrastructure updates, and read the latest announcements from your local barangay office.</p>
@@ -81,13 +93,13 @@ tailwind.config = { theme: { extend: {
 </div>
 
 <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-<a class="group flex items-center gap-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 hover:shadow-md hover:border-outline transition-all" href="{% url 'report_create' %}">
-<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex-shrink-0 flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
-<span class="material-symbols-outlined text-2xl">add_circle</span>
+<a class="group flex items-center gap-4 bg-primary text-on-primary border border-primary rounded-xl p-4 hover:bg-primary-container hover:shadow-md transition-all" href="{% url 'report_create' %}">
+<div class="w-10 h-10 rounded-lg bg-white/15 text-white flex-shrink-0 flex items-center justify-center group-hover:bg-white/25 transition-colors">
+<span class="material-symbols-outlined text-2xl">add_a_photo</span>
 </div>
 <div class="min-w-0">
-<h3 class="font-semibold text-on-surface">Submit New Report</h3>
-<p class="text-sm text-on-surface-variant truncate">File a new concern regarding infrastructure or safety.</p>
+<h3 class="font-semibold">Submit New Report</h3>
+<p class="text-sm text-blue-100 truncate">File a new concern regarding infrastructure or safety.</p>
 </div>
 </a>
 <a class="group flex items-center gap-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 hover:shadow-md hover:border-outline transition-all" href="{% url 'report_list' %}">
@@ -99,6 +111,29 @@ tailwind.config = { theme: { extend: {
 <p class="text-sm text-on-surface-variant truncate">Check status and track resolution progress.</p>
 </div>
 </a>
+</section>
+
+<section id="community-board" class="flex flex-col gap-6">
+<div class="flex justify-between items-end border-b border-outline-variant pb-3">
+<div>
+<div class="flex items-center gap-3"><div class="bg-secondary-container text-on-secondary-container p-1.5 rounded-lg"><span class="material-symbols-outlined text-[20px]">campaign</span></div><h2 class="text-2xl text-on-surface font-semibold">Community Board</h2></div>
+<p class="text-on-surface-variant mt-1 text-sm">News and advisories published by your local office.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+{% for announcement in announcements %}
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<div class="flex items-center justify-between gap-3 mb-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-secondary">{{ announcement.get_announcement_type_display }}</span>
+<span class="text-xs text-on-surface-variant">{{ announcement.date_published|default:announcement.date_created|date:"M d, Y" }}</span>
+</div>
+<h3 class="text-lg font-semibold text-on-surface">{{ announcement.title }}</h3>
+<p class="mt-2 text-sm text-on-surface-variant line-clamp-3">{{ announcement.content }}</p>
+</article>
+{% empty %}
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 text-center text-on-surface-variant md:col-span-2">No news or advisories have been published yet.</div>
+{% endfor %}
+</div>
 </section>
 
 <section class="flex flex-col gap-6">

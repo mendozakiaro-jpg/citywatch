@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import Report, ReportStatusLog, ReportFeedback
+from .models import Announcement, Report, ReportStatusLog, ReportFeedback
+
+
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display = ['title', 'announcement_type', 'is_published', 'date_published']
+    list_filter = ['announcement_type', 'is_published']
+    search_fields = ['title', 'content']
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):

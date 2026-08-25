@@ -62,7 +62,7 @@
 
 <header class="w-full top-0 bg-surface border-b border-outline-variant z-50">
 <div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
-<a class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity" href="{% url 'landing' %}">
+<a class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity" href="{% url 'home' %}">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_city</span>
 <span class="text-xl font-bold text-primary">CityWatch</span>
 </a>
@@ -104,8 +104,13 @@
 {% csrf_token %}
 
 <div class="space-y-1.5">
-<label class="block text-xs font-medium text-on-surface" for="fullName">Full Name</label>
-<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="fullName" name="fullName" placeholder="Juan Dela Cruz" required type="text">
+<label class="block text-xs font-medium text-on-surface" for="first_name">First Name</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="first_name" name="first_name" placeholder="Juan" required type="text">
+</div>
+
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-on-surface" for="last_name">Last Name</label>
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface placeholder-on-surface-variant/50" id="last_name" name="last_name" placeholder="Dela Cruz" required type="text">
 </div>
 
 <div class="space-y-1.5">
@@ -145,12 +150,20 @@
 
 <div class="space-y-1.5">
 <label class="block text-xs font-medium text-on-surface" for="password">Password</label>
-<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface" id="password" name="password" placeholder="••••••••" required type="password">
+<input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface" id="password" name="password" placeholder="••••••••" required type="password" minlength="8">
+<ul id="password-requirements" class="mt-2 space-y-1 text-xs text-on-surface-variant">
+<li data-requirement="length">At least 8 characters</li>
+<li data-requirement="uppercase">One uppercase letter</li>
+<li data-requirement="lowercase">One lowercase letter</li>
+<li data-requirement="number">One number</li>
+<li data-requirement="symbol">One symbol</li>
+</ul>
 </div>
 
 <div class="space-y-1.5">
 <label class="block text-xs font-medium text-on-surface" for="confirm_password">Confirm Password</label>
 <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors text-base text-on-surface" id="confirm_password" name="confirm_password" placeholder="••••••••" required type="password">
+<p id="password-match" class="text-xs text-error" role="alert"></p>
 </div>
 
 <div class="pt-2">
@@ -166,6 +179,34 @@
 </button>
 </div>
 </form>
+
+<script>
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirm_password');
+const passwordMatch = document.getElementById('password-match');
+
+function checkPasswordMatch() {
+  const matches = password.value === confirmPassword.value;
+  confirmPassword.setCustomValidity(matches ? '' : 'Passwords do not match.');
+  passwordMatch.textContent = confirmPassword.value && !matches ? 'Passwords do not match.' : '';
+
+  const requirements = {
+    length: password.value.length >= 8,
+    uppercase: /[A-Z]/.test(password.value),
+    lowercase: /[a-z]/.test(password.value),
+    number: /[0-9]/.test(password.value),
+    symbol: /[^A-Za-z0-9]/.test(password.value)
+  };
+  Object.entries(requirements).forEach(([name, met]) => {
+    const item = document.querySelector(`[data-requirement="${name}"]`);
+    item.classList.toggle('text-secondary', met);
+    item.classList.toggle('line-through', met);
+  });
+}
+
+password.addEventListener('input', checkPasswordMatch);
+confirmPassword.addEventListener('input', checkPasswordMatch);
+</script>
 
 <div class="text-center pt-4 border-t border-outline-variant/30">
 <p class="text-base text-on-surface-variant">

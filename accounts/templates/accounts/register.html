@@ -62,11 +62,14 @@
 
 <header class="w-full top-0 bg-surface border-b border-outline-variant z-50">
 <div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
-<a class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity" href="{% url 'login' %}">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_police</span>
+<a class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity" href="{% url 'landing' %}">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_city</span>
 <span class="text-xl font-bold text-primary">CityWatch</span>
 </a>
 <div class="flex items-center gap-4 text-sm font-semibold">
+<a class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors px-4 py-2" href="{% url 'landing' %}">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Home
+</a>
 <a class="hidden sm:block text-primary hover:bg-surface-container transition-colors px-4 py-2 rounded-full" href="{% url 'login' %}">Login</a>
 </div>
 </div>
